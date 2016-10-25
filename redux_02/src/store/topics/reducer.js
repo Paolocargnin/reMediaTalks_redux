@@ -2,23 +2,23 @@
 // reducers also handle plain object actions and modify their state (immutably) accordingly
 // this is the only way to change the store's state
 // the other exports in this file are selectors, which is business logic that digests parts of the store's state
-// for easier consumption by views
+// for easier consumption byIdews
 
 import _ from 'lodash';
 import * as types from './actionTypes';
 import Immutable from 'seamless-immutable';
 
 const initialState = Immutable({
-  topicsByUrl: undefined,
+  topicsById: undefined,
   selectedTopicUrls: [],
-  selectionFinalized: false
+  selectionFinalized: false,
 });
 
 export default function reduce(state = initialState, action = {}) {
   switch (action.type) {
     case types.TOPICS_FETCHED:
       return state.merge({
-        topicsByUrl: action.topicsByUrl
+        topicsById:  action.topicsById
       });
     case types.TOPICS_SELECTED:
       return state.merge({
@@ -28,15 +28,18 @@ export default function reduce(state = initialState, action = {}) {
       return state.merge({
         selectionFinalized: true
       });
-    case types.FORM_UPDATE_VALUE:
-      return _.assign({}, state, {
-        values: _.assign({}, state.values, {
-          [action.name]: action.value
-        })
+    case types.ADD_POLL:
+      return state.merge({
+        poll: action.poll
       });
-
-    case types.FORM_RESET:
-      return initialState;
+    case types.UPDATE_TOPIC:
+      return state.merge({
+        topicId: action.topicId
+      });
+    case types.DELETE_TOPIC:
+      return state.merge({
+        topicId: action.topicId
+      });
     default:
       return state;
   }
@@ -45,18 +48,18 @@ export default function reduce(state = initialState, action = {}) {
 // selectors
 
 export function getTopics(state) {
-  const topicsByUrl = state.topics.topicsByUrl;
-  const topicsUrlArray = _.keys(topicsByUrl);
-  return [topicsByUrl, topicsUrlArray];
+  const topicsById = state.topics.topicsById;
+  const topicsUrlArray = _.keys(topicsById);
+  return [topicsById, topicsUrlArray];
 }
 
 export function getSelectedTopicUrls(state) {
   return state.topics.selectedTopicUrls;
 }
 
-export function getSelectedTopicsByUrl(state) {
-  return _.mapValues(_.keyBy(state.topics.selectedTopicUrls), (topicUrl) => state.topics.topicsByUrl[topicUrl]);
-}
+// export function getSelectedTopicsById(state) {
+//   return _.mapValues(_.keyByIdate.topics.selectedTopicIds, (topicId) => state.topics.topicsById[topicId] );
+// }
 
 export function isTopicSelectionValid(state) {
   return state.topics.selectedTopicUrls.length === 3;

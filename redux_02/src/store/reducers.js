@@ -1,7 +1,7 @@
 import topics from './topics/reducer';
-import posts from './posts/reducer';
+import { reducer as form } from 'redux-form';
 
 export {
   topics,
-  posts
+  form
 };

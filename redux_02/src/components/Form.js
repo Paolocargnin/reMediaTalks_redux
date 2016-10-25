@@ -1,7 +1,5 @@
-// src/components/Form.js
 import React, {PropTypes} from 'react';
 import _ from 'lodash';
-
 
 const noop = () => undefined;
 
@@ -19,8 +17,6 @@ export default React.createClass({
     reset: PropTypes.func,
     submit: PropTypes.func,
     values: PropTypes.object,
-    registerValidation: PropTypes.func,
-    isFormValid: PropTypes.func,
   },
 
   getDefaultProps() {
@@ -31,25 +27,10 @@ export default React.createClass({
 
   validations: [],
 
-  registerValidation(isValidFunc) {
-    this.validations = [...this.validations, isValidFunc];
-    return this.removeValidation.bind(null, isValidFunc);
-  },
-
-  removeValidation(ref) {
-    this.validations = _.without(this.validations, ref);
-  },
-
-  isFormValid(showErrors) {
-    return this.validations.reduce((memo, isValidFunc) => 
-      isValidFunc(showErrors) && memo, true);
-  },
 
   submit(){
-    if (this.isFormValid(true)) {
-      this.props.onSubmit(_.assign({}, this.props.values));
-      this.props.reset();
-    }
+    this.props.onSubmit(_.assign({}, this.props.values));
+    this.props.reset();
   },
 
   getChildContext() {
@@ -58,8 +39,6 @@ export default React.createClass({
       reset: this.props.reset,
       submit: this.submit,
       values: this.props.values,
-      registerValidation: this.registerValidation,
-      isFormValid: this.isFormValid
     };
   },
 
@@ -70,4 +49,4 @@ export default React.createClass({
       </form>
     );
   }
-})
+});

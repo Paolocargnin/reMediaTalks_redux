@@ -6,44 +6,62 @@
 //  plain object actions - when you just send a plain action to the reducer
 import _ from 'lodash';
 import * as types from './actionTypes';
-import redditService from '../../services/reddit';
+import pollService from '../../services/pollService';
 import * as topicsSelectors from './reducer';
 
 export function fetchTopics() {
+  console.log('frccia')
   return async(dispatch, getState) => {
     try {
-      const subredditArray = await redditService.getDefaultSubreddits();
-      const topicsByUrl = _.keyBy(subredditArray, (subreddit) => subreddit.id);
-      dispatch({ type: types.TOPICS_FETCHED, topicsByUrl });
+      const topicsArray = await pollService.getTopics();
+      const topicsById = _.keyBy(topicsArray, (topic) => topic.id);
+      dispatch({ type: types.TOPICS_FETCHED, topicsById });
     } catch (error) {
       console.error(error);
     }
   };
 }
 
-export function selectTopic(topicUrl) {
-  return (dispatch, getState) => {
-    const selectedTopics = topicsSelectors.getSelectedTopicUrls(getState());
-    let newSelectedTopics;
-    if (_.indexOf(selectedTopics, topicUrl) !== -1) {
-      newSelectedTopics = _.without(selectedTopics, topicUrl);
-    } else {
-      newSelectedTopics = selectedTopics.length < 3 ?
-        selectedTopics.concat(topicUrl) :
-        selectedTopics.slice(1).concat(topicUrl);
+export function deleteTopic(topicId){
+  return async(dispatch, getState) => {
+    try {
+      const deleteTopic = await pollService.deleteTopic(topicId);
+      if (deleteTopic.length === 0){
+        fetchTopics();
+        dispatch({ type: types.DELETE_TOPIC, topicId });
+      }
+    } catch (error) {
+      console.error(error);
     }
-    dispatch({ type: types.TOPICS_SELECTED, selectedTopicUrls: newSelectedTopics  });
+  };
+
+}
+export function upvoteTopic(topicId){
+  return async(dispatch, getState) => {
+    try {
+      const upvoteTopic = await pollService.upvoteTopic(topicId);
+      if (upvoteTopic.length === 0){
+        dispatch({ type: types.UPDATE_TOPIC, topicId });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 }
 
-
-
-export function addPoll(name, value) {
-  return dispatch => dispatch({
-    type: types.FORM_UPDATE_VALUE,
-    name, value
-  });
+export function addPoll(poll) {
+  return async(dispatch, getState) => {
+    try {
+      const pollId = await pollService.createNewPoll(poll);
+      if (pollId === parseInt(pollId) ){
+        dispatch( { type: types.ADD_POLL, poll: poll } );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
+
 
 export function resetForm() {
   return dispatch => dispatch({

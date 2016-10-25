@@ -7,10 +7,8 @@
 .TopicsScreen ul {
   list-style: none;
   padding-left: 0;
-  width: 640px;
-  margin: auto;
   border: 1px solid #aaa;
-  max-height: calc(100vh - 110px);
+  max-height: 100vh;
   overflow-x: hidden;
   overflow-y: scroll;
 }
@@ -18,7 +16,11 @@
 .TopicsScreen li {
   text-align: left;
   border-bottom: 1px solid #aaa;
+  // cursor: pointer;
+}
+.rp-btn{
   cursor: pointer;
+
 }
 
 .TopicsScreen li > div {
